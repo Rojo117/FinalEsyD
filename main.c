@@ -42,6 +42,8 @@ struct colaReproduccion
   struct colaReproduccion *ant;
 };
 
+int elementoACola(struct colaReproduccion **cola, struct canciones cancion);
+
 
 void impresion(struct elem_lista *inicio)
 {
@@ -49,6 +51,7 @@ void impresion(struct elem_lista *inicio)
   temp = inicio;
   while (temp)
   {
+    printf("$%d\n", temp->cancion.id_cancion);
     printf("< %s >\n",temp -> cancion.can);
     printf("- %s -\n",temp -> artista.art);
     printf("\n");
@@ -129,33 +132,68 @@ int agregarACola(struct colaReproduccion *cola,struct elem_lista *lista, bool re
   }
 }
 ////////////////////////////////////////////////////////////////////////////////////////////
-/*int agregarCancionACola(struct colaReproduccion *cola,struct elem_lista *lista, bool reproducir)
-{/////////////////
-if (reproducir)///////////////////
+int agregarCancionACola(struct colaReproduccion **cola,struct elem_lista *lista, bool reproducir, int ID_Cancion)
 {
-//Aqui se tiene que limpiar la cola
-cola -> sig = NULL;    ////////////////////////////////
+  struct elem_lista *tempElemLista;
+  struct colaReproduccion *tempCola, *temp2;
+  int test;
+    if (reproducir)
+  {
+    //Aqui se tiene que limpiar la cola
+    (*cola)-> sig = NULL;   
+  }
+    //Agregar a la estructura cola todo lo que hay en lista
+    struct colaReproduccion *temp;
+      tempElemLista = lista;
+      while (tempElemLista){
+        if(tempElemLista->cancion.id_cancion == ID_Cancion){
+      temp = (struct colaReproduccion *)calloc(1,sizeof(struct colaReproduccion));
+        if(*cola==NULL){
+            temp ->  cancion = tempElemLista->cancion;
+            temp -> artista = tempElemLista->artista;
+            *cola = temp;
+            return;
+        } else {
+            temp2 = (*cola);
+            while(temp2->sig != NULL){
+                temp2 = temp2->sig;
+            }
+        }
+        temp2->sig = temp;
+      //(*cola) -> sig = temp;
+      temp ->  cancion = tempElemLista->cancion;
+      temp -> artista = tempElemLista->artista;
+      temp -> ant = temp2;
+        //elementoACola(cola, tempElemLista->cancion);
+          return 1;
+          //agregarCancionACola(cola, lista, reproducir,ID_Cancion);
+        } else {
+          tempElemLista = tempElemLista->sig;
+        }
+      }
+      /*if (lista->sig != NULL)
+      {
+        agregarACola(cola -> sig, lista, reproducir);
+      }
+        return 1; 
+    } else
+    {
+      agregarACola(cola -> sig, lista, reproducir);
+    }*/
 }
-//Agregar a la estructura cola todo lo que hay en lista
-struct colaReproduccion *temp;/////////////////////////////
-if (cola -> sig == NULL)/////////////////////////
-{
-temp = (struct colaReproduccion *)calloc(1,sizeof(struct colaReproduccion));/////////////////////
-cola -> sig = temp;///////////////////////////////////////////
-temp ->  cancion = lista -> cancion;//////////////////////////////////
-temp -> artista = lista -> artista;///////////////////////////////////////
-temp -> ant = cola;////////////////////////////////////////////////////
-if (lista->sig != NULL)////////////////////////////////////
-{
-agregarACola(cola -> sig, lista->sig, reproducir);///////////////////////////////////////
-}
-return 1; ////////////////////////////
-} else {///////////////////////////////////
-agregarACola(cola -> sig, lista, reproducir);///////////////////////////////
-}
-}*/
 /////////////////////////////////////////////////////////////////////////////////////////
 
+int elementoACola(struct colaReproduccion **cola, struct canciones cancion)///un solo elemento a la cola
+{
+  int test;
+  printf("Banderita\n");
+  struct colaReproduccion *temp = calloc(1, sizeof(struct colaReproduccion));
+  temp->sig = *cola;
+  temp->cancion = cancion;
+  (*cola)->ant = temp;
+  printf("Se ha agregado la cancion ID %s", cancion.can);
+          scanf("%d", &test);
+}
 
 void estadoDeCola (struct colaReproduccion *inicioCola)
 {
@@ -172,8 +210,6 @@ void estadoDeCola (struct colaReproduccion *inicioCola)
   scanf("%i",&x);
 }
 
-
-
 //////////////////////////////////////////////////////////////////////////////////
 int main ()
 {
@@ -181,7 +217,7 @@ int main ()
   struct canciones *cancion;
   struct elem_lista *listaTemporal;
   struct colaReproduccion *cola;
-  
+  int opcionReproductorint;
   listaTemporal  = (struct elem_lista *) calloc(1, sizeof(*listaTemporal));
   
   FILE *ptr;
@@ -208,8 +244,8 @@ int main ()
     printf("1.  Explorar Generos\n");
     printf("2.  Explorar Canciones\n");
     printf("3.  Reproductor\n");
-    printf("4.  Salir\n\n");
-    printf("5. temporal");
+    printf("4.  Salir\n");
+    printf("5. Cola de reproduccion\n");
     printf("Selecciona una opcion: ");
     scanf("%i",&opcionSwitch);
     switch (opcionSwitch)
@@ -309,9 +345,11 @@ int main ()
                 estadoDeCola(cola->sig);
                 break;
                 case 's': printf("\nSeleccione una canción: ");
+                          scanf("%d",&opcionReproductorint);
+                  printf("Test\n");
+                          agregarCancionACola(&cola, listaTemporal->sig, false, opcionReproductorint);
                 break;
-                default:
-                printf("\nOpción no valida");
+                default:               
                 break;
               }
             }
@@ -401,7 +439,7 @@ int main ()
           return 0;
       break;
       //case 5 sirve para probar, no borrar porfavor
-      case 5: printf("imprimiendo cola repro...");
+      case 5: printf("Cola de reproduccion: \n");
       estadoDeCola(cola->sig);
       break;
       default: 
