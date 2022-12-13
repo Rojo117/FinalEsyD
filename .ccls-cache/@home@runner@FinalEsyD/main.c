@@ -3,18 +3,20 @@
 #include <string.h>
 #include <stdbool.h>
 
-
-struct generos{
+struct generos
+{
 	int id_gen;
 	char gen[50];
 }est;
 
-struct artistas{
+struct artistas
+{
 	int id_art;
 	char art[50];
 }est_art;
 
-struct canciones{
+struct canciones
+{
 	int id_cancion;
 	char can[60];
 	int duracion;
@@ -24,7 +26,8 @@ struct canciones{
 	int r_art;
 }est_can;
 
-struct elem_lista{
+struct elem_lista
+{
   struct canciones cancion;
   struct artistas artista;
   struct generos genero;
@@ -44,13 +47,12 @@ void impresion(struct elem_lista *inicio)
 {
   struct elem_lista *temp;
   temp = inicio;
-  while (temp){
-    
+  while (temp)
+  {
     printf("< %s >\n",temp -> cancion.can);
     printf("- %s -\n",temp -> artista.art);
     printf("\n");
-    temp = temp -> sig;
-    
+    temp = temp -> sig;   
   }
 }
 int insertarLista (struct elem_lista *lista,struct canciones cancion){
@@ -69,14 +71,14 @@ int insertarLista (struct elem_lista *lista,struct canciones cancion){
 //cola
 int insertarArtistas (struct elem_lista *inicio){
   if(!inicio){
-    return;
+    return 0;
   }
   inicio -> cancion.r_art;
     
   FILE *ptr;
   ptr=fopen("Registroart.txt","ab+");
   if (ptr == NULL){
-    return;
+    return 0;
   }
 
   while(!feof(ptr)){
@@ -98,8 +100,7 @@ int insertarArtistas (struct elem_lista *inicio){
     if (reproducir)
     {
       //Aqui se tiene que limpiar la cola
-      cola -> sig = NULL;
-      
+      cola -> sig = NULL;    
     }
     //Agregar a la estructura cola todo lo que hay en lista
     struct colaReproduccion *temp;
