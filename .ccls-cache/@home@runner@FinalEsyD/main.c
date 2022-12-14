@@ -43,6 +43,7 @@ struct colaReproduccion
 };
 
 int elementoACola(struct colaReproduccion **cola, struct canciones cancion);
+int vaciarLista(struct elem_lista **lista);
 
 
 void impresion(struct elem_lista *inicio)
@@ -58,22 +59,29 @@ void impresion(struct elem_lista *inicio)
     temp = temp -> sig;   
   }
 }
-int insertarLista (struct elem_lista *lista,struct canciones cancion)
+
+int insertarLista (struct elem_lista **lista,struct canciones cancion)
 {
-  struct elem_lista *temp;
-  if (lista -> sig == NULL)
-  {
-    temp = (struct elem_lista *)calloc(1,sizeof(struct elem_lista));
-    lista -> sig = temp;
-    temp ->  cancion = cancion;
-    return 1;  
-  } else
-    {
-      insertarLista(lista -> sig, cancion);
+  struct elem_lista *temp, *ultimo;
+    if((*lista) == NULL){
+        temp = (struct elem_lista *)calloc(1,sizeof(struct elem_lista));
+        temp->cancion = cancion;
+        *lista =  temp;
+        return 1;  
+    } else {
+        ultimo = (*lista);
+        while (ultimo->sig != NULL)
+        {
+            ultimo = ultimo->sig;
+        }
+        temp = (struct elem_lista *)calloc(1,sizeof(struct elem_lista));
+        temp->cancion = cancion;
+        ultimo->sig = temp;
+        return 1;
     }
 }
 
-//cola
+
 int insertarArtistas (struct elem_lista *inicio)
 {
     if(!inicio)
@@ -152,7 +160,7 @@ int agregarCancionACola(struct colaReproduccion **cola,struct elem_lista *lista,
             temp ->  cancion = tempElemLista->cancion;
             temp -> artista = tempElemLista->artista;
             *cola = temp;
-            return;
+            return 0;
         } else {
             temp2 = (*cola);
             while(temp2->sig != NULL){
@@ -164,36 +172,13 @@ int agregarCancionACola(struct colaReproduccion **cola,struct elem_lista *lista,
       temp ->  cancion = tempElemLista->cancion;
       temp -> artista = tempElemLista->artista;
       temp -> ant = temp2;
-        //elementoACola(cola, tempElemLista->cancion);
           return 1;
-          //agregarCancionACola(cola, lista, reproducir,ID_Cancion);
         } else {
           tempElemLista = tempElemLista->sig;
         }
       }
-      /*if (lista->sig != NULL)
-      {
-        agregarACola(cola -> sig, lista, reproducir);
-      }
-        return 1; 
-    } else
-    {
-      agregarACola(cola -> sig, lista, reproducir);
-    }*/
 }
-/////////////////////////////////////////////////////////////////////////////////////////
 
-int elementoACola(struct colaReproduccion **cola, struct canciones cancion)///un solo elemento a la cola
-{
-  int test;
-  printf("Banderita\n");
-  struct colaReproduccion *temp = calloc(1, sizeof(struct colaReproduccion));
-  temp->sig = *cola;
-  temp->cancion = cancion;
-  (*cola)->ant = temp;
-  printf("Se ha agregado la cancion ID %s", cancion.can);
-          scanf("%d", &test);
-}
 
 void estadoDeCola (struct colaReproduccion *inicioCola)
 {
@@ -209,16 +194,34 @@ void estadoDeCola (struct colaReproduccion *inicioCola)
   int x;
   scanf("%i",&x);
 }
+//Funcion auxiliar que deja completamente vacia y elimina todos los elementos de una lista
+int vaciarLista(struct elem_lista **lista){
+    struct elem_lista *ultimo, *temp;
+    if((*lista) == NULL){
+        return 0;
+    } else {
+        ultimo = (*lista);
+        while (ultimo->sig != NULL)
+        {   
+            temp = ultimo;
+            ultimo = ultimo->sig;
+            free(temp);
+        }
+        free(ultimo);
+        (*lista) = NULL;
+    }
+    return 1;
+}
 
 //////////////////////////////////////////////////////////////////////////////////
 int main ()
 {
   struct elem_lista *lista;
   struct canciones *cancion;
-  struct elem_lista *listaTemporal;
+  struct elem_lista *listaTemporal = NULL;
   struct colaReproduccion *cola;
   int opcionReproductorint;
-  listaTemporal  = (struct elem_lista *) calloc(1, sizeof(*listaTemporal));
+  //listaTemporal  = (struct elem_lista *) calloc(1, sizeof(*listaTemporal));
   
   FILE *ptr;
   FILE *ptr2;
@@ -302,14 +305,15 @@ int main ()
                   main();
                   break;
                 }
-                  listaTemporal  = (struct elem_lista *) calloc(1,sizeof(*listaTemporal));
+                  //listaTemporal  = (struct elem_lista *) calloc(1,sizeof(*listaTemporal));
+                vaciarLista(&listaTemporal);
                   while(!feof(ptr2))
                 {
                   fread(&est_can,sizeof(est_can),1,ptr2);
                   if(opgen == est_can.r_gen)
                   {
                     //printf("\n<%s>",est_can.can);    
-                    insertarLista(listaTemporal,est_can);
+                    insertarLista(&listaTemporal,est_can);
                     insertarArtistas(listaTemporal);
                   }
                 }    
@@ -318,6 +322,7 @@ int main ()
             }
             if(opgen!=est.id_gen)
             {
+              
               printf("Genero no encontrado.\n");
             }
             ////////////////     
@@ -326,7 +331,7 @@ int main ()
             {
               system("clear");  
               printf("\n----------%s----------\n\n", est.gen);
-              impresion(listaTemporal->sig);
+              impresion(listaTemporal);
               printf("\n--------------------------------------");
               printf("\np.  Regresar al menu principal.");
               printf("\nq.  Agregar a la cola de reproducción.");
@@ -338,16 +343,17 @@ int main ()
               
               switch(opc)
               {     
-                case 'q': agregarACola( cola, listaTemporal->sig, false );
-                estadoDeCola(cola->sig);
+                case 'q':  agregarACola( cola, listaTemporal, false ); 
+                          estadoDeCola(cola->sig);
+                         // vaciarLista(&listaTemporal);
                 break;
-                case 'r': agregarACola( cola, listaTemporal->sig, true );
-                estadoDeCola(cola->sig);
+                case 'r': agregarACola( cola, listaTemporal, true );
+                          estadoDeCola(cola->sig);
+                         // vaciarLista(&listaTemporal);
                 break;
                 case 's': printf("\nSeleccione una canción: ");
                           scanf("%d",&opcionReproductorint);
-                  printf("Test\n");
-                          agregarCancionACola(&cola, listaTemporal->sig, false, opcionReproductorint);
+                          agregarCancionACola(&cola, listaTemporal, false, opcionReproductorint);
                 break;
                 default:               
                 break;
