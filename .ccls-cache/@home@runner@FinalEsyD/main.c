@@ -3,6 +3,7 @@
 #include <string.h>
 #include <stdbool.h>
 
+
 struct generos
 {
   int id_gen;
@@ -248,7 +249,8 @@ int main ()
     printf("2.  Explorar Canciones\n");
     printf("3.  Reproductor\n");
     printf("4.  Salir\n");
-    printf("5. Cola de reproduccion\n");
+    printf("5.  Cola de reproduccion\n");
+    printf("6.  Buscar canciones a partir de una frase\n\n");
     printf("Selecciona una opcion: ");
     scanf("%i",&opcionSwitch);
     switch (opcionSwitch)
@@ -336,7 +338,8 @@ int main ()
               printf("\np.  Regresar al menu principal.");
               printf("\nq.  Agregar a la cola de reproducción.");
               printf("\nr.  Reproducir toda esta lista.");
-              printf("\ns.  Escoger una canción.");
+              printf("\ns.  Escoger una canción para enviarla a la cola.");
+              printf("\nt.  Escoger una canción para reproducirla.");
               printf("\n--------------------------------------");
               printf("\nSeleccione una opción: ");
               scanf( "%s", &opc);
@@ -351,9 +354,13 @@ int main ()
                           estadoDeCola(cola->sig);
                          // vaciarLista(&listaTemporal);
                 break;
-                case 's': printf("\nSeleccione una canción: ");
+                case 's': printf("\nSeleccione una canción para enviarla a la cola: ");
                           scanf("%d",&opcionReproductorint);
                           agregarCancionACola(&cola, listaTemporal, false, opcionReproductorint);
+                break;
+                case 't': printf("\nSeleccione una canción para reproducirla: ");
+                          scanf("%d",&opcionReproductorint);
+                          agregarCancionACola(&cola, listaTemporal, true, opcionReproductorint);
                 break;
                 default:               
                 break;
@@ -414,19 +421,18 @@ int main ()
       printf("<   ||   >\n");
       printf("Opciones:\n");
       printf("p: Regresar al menu principal\n");
-      printf("a: Cancion anterior\n");
-      printf("d: Siguiente cancion\n");
-      printf("e: Repetir cancion\n");
-      printf("r: Activar/desactivar Repeticion\n");
+      printf("a: Cancion anterior\n");//parte daniel
+      printf("d: Siguiente cancion\n");//parte daniel
+      printf("e: Repetir cancion\n");//parte daniel
+      printf("r: Activar/desactivar Repeticion\n");//parte daniel
       printf("s: Pausar/Continuar sonando\n");
       printf("Selecciona una opcion: ");
       getchar();
       scanf("%c",&opcionReproductor);
-      
+      while (opcionReproductor!='p'){
       switch (opcionReproductor)
       {
-        case 'p': main();
-        break;
+        system("clear");
         case 'a': printf("Cancion anterior...");
         break;
         case 'd': printf("Siguiente cancion...");
@@ -440,6 +446,7 @@ int main ()
         default: 
         break;
       }
+        }
       break;
       case 4: printf("Saliendo...");
           return 0;
@@ -448,6 +455,9 @@ int main ()
       case 5: printf("Cola de reproduccion: \n");
       estadoDeCola(cola->sig);
       break;
+      case 6:
+      break;
+      case 7://parte daniel busqueda por coincidencia 
       default: 
       break;
     }
